@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>chat page</title>
+  </head>
+  <body>
+    <h1>Welcome {{username}}</h1>
+    <form action="" method="POST">
+      <textarea
+        placeholder="Write a message here"
+        name="message"
+        id="message"
+        cols="50"
+        rows="4"
+      >
+      </textarea>
+      <br />
+      <button type="submit">Send message</button>
+    </form>
+
+    {% for message in chat_messages %}
+    <p>
+      {{message.timestamp}} -
+      <strong>{{message.from}}:</strong> {{message.message}}
+    </p>
+
+    {% endfor %}
+
+    <script>
+      let textbox = document.getElementById("message");
+      let timer = setTimeout(function() {
+        location.reload();
+      }, 5000);
+
+      textbox.onkeydown = function(e) {
+        clearTimeout(timer);
+
+        timer = setTimeout(function() {
+          location.reload();
+        }, 5000);
+      };
+    </script>
+  </body>
+</html>

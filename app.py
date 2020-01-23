@@ -1,10 +1,14 @@
 import os
+import requests
 from datetime import datetime
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, url_for
 
 app = Flask(__name__)
 app.secret_key = "randomkey123"
 messages = []
+
+a = requests.get("https://api.binance.com/api/v1/ticker/24hr").json()
+# print(a)
 
 
 def add_message(username, message):
@@ -22,22 +26,22 @@ def index():
         session["username"] = request.form["username"]
 
     if "username" in session:
-        return redirect(session["username"])
+        return redirect(url_for("user", username=session["username"]))
 
     return render_template("index.html")
 
 # route for username
-@app.route("/<username>")
+@app.route("/chat/<username>", methods=["GET", "POST"])
 def user(username):
-    """Display Chat Message"""
-    return "<h1>Welcome, {0} </h1> {1}".format(username, messages)
+    """Add and Display Chat Message"""
 
-# route for user chat
-@app.route("/<username>/<message>")
-def send_message(username, message):
-    """Create new message and redirect to chat page"""
-    add_message(username, message)
-    return redirect("/" + username)
+    if request.method == "POST":
+        username = session["username"]
+        message = request.form["message"]
+        add_message(username, message)
+        return redirect(session["username"])
+
+    return render_template("chat.html", username=username, chat_messages=messages)
 
 
 app.run(host=os.getenv("IP"),
